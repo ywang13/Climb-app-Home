@@ -3,6 +3,27 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+
+// TypeScript interface to match Python FastAPI response
+interface TimelineSession {
+  id: number;
+  title: string;
+  description: string | null;
+  total_send: number;
+  routes_climbed: number;
+  duration_minutes: number;
+  created_at: string;
+  user: {
+    id: number;
+    username: string;
+    profile_picture: string | null;
+  };
+  gym: {
+    id: number;
+    name: string;
+    location: string;
+  };
+}
 // Timeline session interface to match Python API response
 interface TimelineSession {
   id: number;
