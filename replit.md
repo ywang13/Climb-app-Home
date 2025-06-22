@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a climbing social media app MVP built with a React frontend and Python FastAPI backend. The application features a mobile-first design for climbers to log and share their climbing sessions. The frontend uses TypeScript with shadcn/ui components, while the backend is built with FastAPI, SQLAlchemy, and PostgreSQL for robust data management.
+This is a full-stack web application built with a React frontend and Express.js backend. The application uses TypeScript throughout and is designed for deployment on Replit with PostgreSQL database support. The frontend utilizes shadcn/ui components for a modern user interface, while the backend provides a RESTful API architecture.
 
 ## System Architecture
 
@@ -25,13 +25,10 @@ This is a climbing social media app MVP built with a React frontend and Python F
 
 ### Database Design
 - **Primary Database**: PostgreSQL 16
-- **ORM**: SQLAlchemy for type-safe database operations
-- **Schema Location**: `backend/models.py` for SQLAlchemy models
-- **API Models**: `backend/schemas.py` for Pydantic request/response models
-- **Current Schema**: 
-  - Users table: id, username, password, profile_picture, created_at
-  - Gyms table: id, name, location, created_at
-  - Sessions table: id, user_id, gym_id, title, description, total_send, routes_climbed, duration_minutes, created_at
+- **ORM**: Drizzle ORM for type-safe database operations
+- **Schema Location**: `shared/schema.ts` for shared types between client/server
+- **Migrations**: Stored in `./migrations` directory
+- **Current Schema**: Users table with id, username, and password fields
 
 ## Key Components
 
@@ -56,10 +53,10 @@ This is a climbing social media app MVP built with a React frontend and Python F
 
 ## Data Flow
 
-1. **Request Flow**: Client requests → FastAPI middleware → Route handlers → CRUD layer → SQLAlchemy → Database
-2. **Response Flow**: Database → SQLAlchemy → CRUD layer → Pydantic models → JSON response → Client
-3. **Development Flow**: Vite dev server proxies API requests to FastAPI backend
-4. **Build Flow**: Vite builds frontend static assets, Python backend runs with uvicorn
+1. **Request Flow**: Client requests → Express middleware → Route handlers → Storage layer → Database
+2. **Response Flow**: Database → Storage layer → Route handlers → JSON response → Client
+3. **Development Flow**: Vite dev server proxies API requests to Express backend
+4. **Build Flow**: Vite builds frontend static assets, esbuild bundles backend
 
 ## External Dependencies
 
@@ -82,10 +79,10 @@ This is a climbing social media app MVP built with a React frontend and Python F
 ## Deployment Strategy
 
 ### Replit Configuration
-- **Modules**: nodejs-20, web, postgresql-16, python-3.11
-- **Development**: `npm run dev` starts FastAPI backend and Vite frontend concurrently
-- **Build Process**: `npm run build` creates production frontend assets
-- **Production**: `npm run start` serves FastAPI backend on port 5000
+- **Modules**: nodejs-20, web, postgresql-16
+- **Development**: `npm run dev` starts both frontend and backend
+- **Build Process**: `npm run build` creates production assets
+- **Production**: `npm run start` serves the built application
 - **Port Configuration**: Internal port 5000, external port 80
 - **Autoscale Deployment**: Configured for automatic scaling
 
@@ -95,10 +92,10 @@ This is a climbing social media app MVP built with a React frontend and Python F
 - **Production Mode**: Serves static files with Express
 
 ### Build Process
-1. **Frontend Build**: Vite builds React app to `client/dist`
-2. **Backend**: Python FastAPI server runs directly without bundling
-3. **Asset Serving**: FastAPI can serve frontend assets statically in production
-4. **Database Seeding**: `npm run seed` populates database with sample climbing data
+1. **Frontend Build**: Vite builds React app to `dist/public`
+2. **Backend Build**: esbuild bundles Express server to `dist/index.js`
+3. **Asset Serving**: Production server serves frontend assets statically
+4. **Database Migration**: `npm run db:push` applies schema changes
 
 ## Changelog
 
