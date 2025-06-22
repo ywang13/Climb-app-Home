@@ -16,12 +16,12 @@ This is a full-stack web application built with a React frontend and Express.js 
 - **Form Handling**: React Hook Form with Zod validation
 
 ### Backend Architecture
-- **Runtime**: Node.js 20 with Express.js framework
-- **Language**: TypeScript with ES modules
-- **Database ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database Provider**: Neon Database (@neondatabase/serverless)
-- **Session Management**: Ready for PostgreSQL-backed sessions (connect-pg-simple)
-- **Development**: tsx for TypeScript execution in development
+- **Runtime**: Python 3.11 with FastAPI framework
+- **Language**: Python with async/await support
+- **Database ORM**: SQLAlchemy with PostgreSQL dialect
+- **Database Provider**: PostgreSQL via psycopg2-binary
+- **API Documentation**: Automatic OpenAPI/Swagger docs via FastAPI
+- **Development**: uvicorn ASGI server with hot reload
 
 ### Database Design
 - **Primary Database**: PostgreSQL 16
@@ -44,11 +44,12 @@ This is a full-stack web application built with a React frontend and Express.js 
 - **Utils**: Utility functions for styling and common operations
 - **Assets**: SVG icons and design assets
 
-### Backend (`server/`)
-- **Express Server**: Main application server with middleware setup
-- **Storage Interface**: Abstracted storage layer with in-memory implementation
-- **Route Registration**: Modular route handling system
-- **Vite Integration**: Development-time Vite middleware for HMR
+### Backend (`backend/`)
+- **FastAPI Server**: Main application server with automatic API documentation
+- **SQLAlchemy Models**: Database models with relationships for users, gyms, and sessions
+- **Pydantic Schemas**: Request/response validation and serialization
+- **CRUD Operations**: Database operations with proper error handling
+- **Sample Data**: Seeded database with realistic climbing session data
 
 ## Data Flow
 
@@ -98,8 +99,13 @@ This is a full-stack web application built with a React frontend and Express.js 
 
 ## Changelog
 
-Changelog:
-- June 22, 2025. Initial setup
+- June 22, 2025: Initial setup with TypeScript/Express backend
+- June 22, 2025: Converted backend from TypeScript/Express to Python/FastAPI
+  - Created SQLAlchemy models for users, gyms, and climbing sessions
+  - Implemented FastAPI endpoints with automatic API documentation
+  - Added Pydantic schemas for request/response validation
+  - Seeded database with sample climbing data
+  - Updated frontend to work with Python API response format
 
 ## User Preferences
 

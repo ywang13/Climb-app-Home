@@ -3,7 +3,26 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { TimelineSession } from "@/../../shared/schema";
+// Timeline session interface to match Python API response
+interface TimelineSession {
+  id: number;
+  title: string;
+  description: string | null;
+  total_send: number;
+  routes_climbed: number;
+  duration_minutes: number;
+  created_at: string;
+  user: {
+    id: number;
+    username: string;
+    profile_picture: string | null;
+  };
+  gym: {
+    id: number;
+    name: string;
+    location: string;
+  };
+}
 
 async function fetchTimeline(): Promise<TimelineSession[]> {
   const response = await fetch("/api/timeline");
@@ -13,7 +32,7 @@ async function fetchTimeline(): Promise<TimelineSession[]> {
   return response.json();
 }
 
-function formatTimeAgo(date: Date): string {
+function formatTimeAgo(date: string): string {
   const now = new Date();
   const diffInMs = now.getTime() - new Date(date).getTime();
   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
@@ -176,7 +195,7 @@ export const Home = (): JSX.Element => {
                   <div className="flex items-center gap-4">
                     <Avatar className="w-[45px] h-[45px]">
                       <AvatarImage
-                        src={post.user.profilePicture || "/figmaAssets/intersect-3.png"}
+                        src={post.user.profile_picture || "/figmaAssets/intersect-3.png"}
                         alt={`${post.user.username}'s avatar`}
                       />
                       <AvatarFallback>
@@ -190,7 +209,7 @@ export const Home = (): JSX.Element => {
                       </div>
 
                       <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
-                        {formatTimeAgo(post.createdAt)} · Movement {post.gym.name.replace("Movement ", "")}
+                        {formatTimeAgo(post.created_at)} · Movement {post.gym.name.replace("Movement ", "")}
                       </div>
                     </div>
                   </div>
@@ -212,7 +231,7 @@ export const Home = (): JSX.Element => {
                         <br />
                       </span>
                       <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {post.totalSend}
+                        {post.total_send}
                       </span>
                     </div>
 
@@ -222,7 +241,7 @@ export const Home = (): JSX.Element => {
                         <br />
                       </span>
                       <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {post.routesClimbed}
+                        {post.routes_climbed}
                       </span>
                     </div>
 
@@ -232,7 +251,7 @@ export const Home = (): JSX.Element => {
                         <br />
                       </span>
                       <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {formatDuration(post.duration)}
+                        {formatDuration(post.duration_minutes)}
                       </span>
                     </div>
                   </div>
