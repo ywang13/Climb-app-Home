@@ -38,28 +38,28 @@ export default function SessionCard({ session, timeAgo }: SessionCardProps) {
       <div className="mb-4">
         <h4 className="font-medium text-gray-900 text-base mb-3">{session.title}</h4>
         
+        {/* Stats section */}
+        <div className="flex items-start gap-8 mb-4">
+          <div>
+            <div className="text-xs text-gray-500">Total send</div>
+            <div className="text-lg font-bold text-gray-900">{session.stats.totalSends}</div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Routes climbed</div>
+            <div className="text-lg font-bold text-gray-900">{session.stats.routesClimbed}</div>
+          </div>
+          <div>
+            <div className="text-xs text-gray-500">Time</div>
+            <div className="text-lg font-bold text-gray-900">{session.stats.duration}</div>
+          </div>
+        </div>
+        
         {/* Media Gallery */}
         {session.media && session.media.length > 0 && (
-          <div className="mb-4">
+          <div>
             <MediaGallery media={session.media} />
           </div>
         )}
-      </div>
-
-      {/* Stats section */}
-      <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-        <div className="text-center">
-          <div className="text-lg font-bold text-gray-900">{session.stats.totalSends}</div>
-          <div className="text-xs text-gray-500">Total send</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-gray-900">{session.stats.routesClimbed}</div>
-          <div className="text-xs text-gray-500">Routes climbed</div>
-        </div>
-        <div className="text-center">
-          <div className="text-lg font-bold text-gray-900">{session.stats.duration}</div>
-          <div className="text-xs text-gray-500">Time</div>
-        </div>
       </div>
     </div>
   );
