@@ -5,9 +5,11 @@ import { relations } from "drizzle-orm";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").unique().notNull(),
-  password: text("password").notNull(),
-  profilePicture: text("profile_picture"),
+  email: text("email").unique().notNull(),
+  hashedPassword: text("hashed_password").notNull(),
+  avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const gyms = pgTable("gyms", {
@@ -20,20 +22,15 @@ export const gyms = pgTable("gyms", {
 export const sessions = pgTable("sessions", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  gymId: integer("gym_id").references(() => gyms.id).notNull(),
+  location: text("location").notNull(),
   title: text("title").notNull(),
-  description: text("description"),
-  totalSend: integer("total_send").default(0),
+  totalSends: integer("total_sends").default(0),
   routesClimbed: integer("routes_climbed").default(0),
-  duration: integer("duration_minutes").notNull(), // in minutes
+  durationMinutes: integer("duration_minutes").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-  sessions: many(sessions),
-}));
-
-export const gymsRelations = relations(gyms, ({ many }) => ({
   sessions: many(sessions),
 }));
 
@@ -42,42 +39,60 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
     fields: [sessions.userId],
     references: [users.id],
   }),
-  gym: one(gyms, {
-    fields: [sessions.gymId],
-    references: [gyms.id],
-  }),
 }));
 
-export const insertUserSchema = createInsertSchema(users);
+export const insertUserSchema = createInsertSchema(users).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
 export const selectUserSchema = createSelectSchema(users);
-export const insertGymSchema = createInsertSchema(gyms);
-export const selectGymSchema = createSelectSchema(gyms);
-export const insertSessionSchema = createInsertSchema(sessions);
+export const insertSessionSchema = createInsertSchema(sessions).omit({ 
+  id: true, 
+  createdAt: true 
+});
 export const selectSessionSchema = createSelectSchema(sessions);
 
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
-export type InsertGym = typeof gyms.$inferInsert;
-export type SelectGym = typeof gyms.$inferSelect;
 export type InsertSession = typeof sessions.$inferInsert;
 export type SelectSession = typeof sessions.$inferSelect;
 
-export type TimelineSession = {
+export type FeedSession = {
   id: number;
-  title: string;
-  description: string | null;
-  totalSend: number;
-  routesClimbed: number;
-  duration: number;
-  createdAt: Date;
   user: {
     id: number;
     username: string;
-    profilePicture: string | null;
+    avatarUrl: string | null;
   };
-  gym: {
-    id: number;
-    name: string;
-    location: string;
+  location: string;
+  createdAt: Date;
+  title: string;
+  stats: {
+    totalSends: number;
+    routesClimbed: number;
+    duration: string; // formatted as "Xh Ym"
   };
 };
+
+export type FeedResponse = {
+  sessions: FeedSession[];
+  pagination: {
+    page: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+};
+
+// Login/Register schemas
+export const registerUserSchema = insertUserSchema.extend({
+  password: insertUserSchema.shape.hashedPassword, // Will be hashed on server
+}).omit({ hashedPassword: true });
+
+export const loginUserSchema = registerUserSchema.pick({
+  email: true,
+  password: true,
+});
+
+export type RegisterUser = typeof registerUserSchema._input;
+export type LoginUser = typeof loginUserSchema._input;

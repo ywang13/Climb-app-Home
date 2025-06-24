@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a full-stack web application built with a React frontend and Express.js backend. The application uses TypeScript throughout and is designed for deployment on Replit with PostgreSQL database support. The frontend utilizes shadcn/ui components for a modern user interface, while the backend provides a RESTful API architecture.
+This is a full-stack climbing session tracking social media application built with a React frontend and Express.js backend. The application features JWT authentication, user registration/login, session management, and a social feed for sharing climbing achievements. It uses TypeScript throughout and is designed for deployment on Replit with PostgreSQL database support. The frontend utilizes shadcn/ui components for a modern user interface, while the backend provides a comprehensive RESTful API architecture with authentication middleware.
 
 ## System Architecture
 
@@ -27,8 +27,11 @@ This is a full-stack web application built with a React frontend and Express.js 
 - **Primary Database**: PostgreSQL 16
 - **ORM**: Drizzle ORM for type-safe database operations
 - **Schema Location**: `shared/schema.ts` for shared types between client/server
-- **Migrations**: Stored in `./migrations` directory
-- **Current Schema**: Users table with id, username, and password fields
+- **Migrations**: Applied via `npm run db:push`
+- **Current Schema**: 
+  - Users table: id, username, email, hashedPassword, avatarUrl, createdAt, updatedAt
+  - Sessions table: id, userId, location, title, totalSends, routesClimbed, durationMinutes, createdAt
+- **Authentication**: JWT-based with bcrypt password hashing
 
 ## Key Components
 
@@ -45,10 +48,15 @@ This is a full-stack web application built with a React frontend and Express.js 
 - **Assets**: SVG icons and design assets
 
 ### Backend (`server/`)
-- **Express Server**: Main application server with middleware setup
-- **Storage Interface**: Abstracted storage layer with in-memory implementation
-- **Route Registration**: Modular route handling system
-- **Vite Integration**: Development-time Vite middleware for HMR
+- **Express Server**: Main application server with CORS and authentication middleware
+- **Authentication System**: JWT-based auth with bcrypt password hashing (`server/auth.ts`)
+- **Storage Interface**: Abstracted storage layer supporting both PostgreSQL and in-memory implementations
+- **Route Registration**: FastAPI-style comprehensive API endpoints with proper error handling
+- **API Endpoints**:
+  - User management: `/api/users/register`, `/api/users/login`, `/api/users/me`, `/api/users/:userId`
+  - Session management: `/api/sessions` (CRUD operations with authentication)
+  - Social feed: `/api/feed` (paginated climbing sessions)
+  - Legacy compatibility: `/api/timeline` (backwards compatibility)
 
 ## Data Flow
 
@@ -96,10 +104,20 @@ This is a full-stack web application built with a React frontend and Express.js 
 3. **Asset Serving**: Production server serves frontend assets statically
 4. **Database Migration**: `npm run db:push` applies schema changes
 
+## Recent Changes
+
+✓ Retuned backend with FastAPI-style architecture (June 24, 2025)
+✓ Added JWT authentication system with user registration/login
+✓ Implemented comprehensive session CRUD operations  
+✓ Enhanced database schema with proper user and session management
+✓ Added paginated feed endpoint with social media features
+✓ CORS middleware configuration for cross-origin requests
+→ Updated storage layer with PostgreSQL and in-memory implementations
+
 ## Changelog
 
-Changelog:
-- June 22, 2025. Initial setup
+- June 24, 2025: Major backend overhaul - FastAPI-style API endpoints, JWT authentication, enhanced database schema
+- June 22, 2025: Initial setup
 
 ## User Preferences
 
