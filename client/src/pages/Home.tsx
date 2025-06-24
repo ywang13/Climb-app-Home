@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { TimelineSession } from "@/../../shared/schema";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { UserMenu } from "@/components/UserMenu";
+import { CreateSessionModal } from "@/components/CreateSessionModal";
+import { apiRequest } from "@/lib/queryClient";
+import { authManager } from "@/lib/auth";
+import type { FeedResponse } from "@/../../shared/schema";
 
-async function fetchTimeline(): Promise<TimelineSession[]> {
-  const response = await fetch("/api/timeline");
-  if (!response.ok) {
-    throw new Error("Failed to fetch timeline");
-  }
-  return response.json();
+async function fetchFeed(): Promise<FeedResponse> {
+  return apiRequest<FeedResponse>("/api/feed?page=1&limit=20");
 }
 
 function formatTimeAgo(date: Date): string {
@@ -41,10 +43,14 @@ function formatDuration(minutes: number): string {
 }
 
 export const Home = (): JSX.Element => {
-  const { data: posts, isLoading, error } = useQuery({
-    queryKey: ["timeline"],
-    queryFn: fetchTimeline,
+  const [createSessionOpen, setCreateSessionOpen] = useState(false);
+
+  const { data: feedData, isLoading, error } = useQuery({
+    queryKey: ["feed"],
+    queryFn: fetchFeed,
   });
+
+  const sessions = feedData?.sessions || [];
 
   if (isLoading) {
     return (
@@ -57,25 +63,49 @@ export const Home = (): JSX.Element => {
                 9:41
               </div>
             </div>
-            <div className="relative w-[124px] h-2.5" />
+
+            <div className="flex items-center justify-center px-4">
+              <UserMenu />
+            </div>
+
             <div className="flex items-center justify-center gap-[7px] pl-1.5 pr-4 py-0 relative flex-1 grow">
-              <div className="w-[19.2px] h-[12.23px] bg-gray-300 rounded"></div>
-              <div className="w-[17.14px] h-[12.33px] bg-gray-300 rounded"></div>
-              <div className="relative w-[27.33px] h-[13px]">
-                <div className="w-[25px] h-[13px] top-0 rounded-[4.3px] border border-solid border-[#00000059] absolute left-0">
-                  <div className="relative w-[21px] h-[9px] top-px left-px bg-black rounded-[2.5px]" />
-                </div>
-              </div>
+              <img
+                className="relative w-[19.2px] h-[12.23px]"
+                alt="Cellular connection"
+                src="/figmaAssets/cellular-connection.svg"
+              />
+              <img
+                className="relative w-[18.01px] h-3"
+                alt="Wifi"
+                src="/figmaAssets/wifi.svg"
+              />
+              <img
+                className="relative w-6 h-3"
+                alt="Battery"
+                src="/figmaAssets/battery.svg"
+              />
             </div>
           </div>
         </div>
 
         {/* Header */}
-        <header className="absolute w-full max-w-[440px] h-[68px] top-[50px] left-0 bg-white shadow-[0px_4px_5px_#0000001a] flex items-center justify-center">
-          <h1 className="[font-family:'SF_Pro-Medium',Helvetica] font-medium text-black text-base tracking-[0] leading-[normal]">
-            Home
-          </h1>
-        </header>
+        <div className="flex flex-col w-full h-[88px] items-start pt-0 pb-4 px-0 absolute top-[50px] left-0 bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between relative self-stretch w-full h-full px-4">
+            <div className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-black text-[28px] tracking-[0.374px] leading-[34px]">
+              ClimbTracker
+            </div>
+            {authManager.isAuthenticated() && (
+              <Button
+                size="sm"
+                onClick={() => setCreateSessionOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Log Session
+              </Button>
+            )}
+          </div>
+        </div>
 
         {/* Loading Content */}
         <div className="w-full max-w-[440px] h-[806px] top-[150px] absolute left-0">
@@ -129,7 +159,9 @@ export const Home = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="relative w-[124px] h-2.5" />
+          <div className="flex items-center justify-center px-4">
+            <UserMenu />
+          </div>
 
           <div className="flex items-center justify-center gap-[7px] pl-1.5 pr-4 py-0 relative flex-1 grow">
             <img
@@ -167,78 +199,64 @@ export const Home = (): JSX.Element => {
       </header>
 
       {/* Content */}
-      <div className="w-full max-w-[440px] h-[806px] top-[150px] absolute left-0">
+      <div className="w-full max-w-[440px] h-[806px] top-[138px] absolute left-0 overflow-y-auto">
         <div className="flex flex-col w-full items-center gap-2">
           <div className="flex flex-col items-start gap-8 w-full">
-            {posts && posts.length > 0 ? posts.map((post) => (
-              <Card key={post.id} className="w-full rounded-none shadow-none">
-                <CardContent className="flex flex-col items-start gap-4 p-4">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="w-[45px] h-[45px]">
-                      <AvatarImage
-                        src={post.user.profilePicture || "/figmaAssets/intersect-3.png"}
-                        alt={`${post.user.username}'s avatar`}
-                      />
+            {sessions && sessions.length > 0 ? sessions.map((session, index) => {
+              const timeAgo = formatTimeAgo(session.createdAt);
+              
+              return (
+              <Card key={index} className="w-full bg-white rounded-none border-0 border-b border-gray-200 shadow-none">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={session.user.avatarUrl || undefined} />
                       <AvatarFallback>
-                        {post.user.username.charAt(0).toUpperCase()}
+                        {session.user.username.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-
-                    <div className="flex flex-col items-start gap-2">
-                      <div className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-black text-base">
-                        {post.user.username}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-sm">{session.user.username}</span>
+                        <span className="text-gray-500 text-xs">{timeAgo}</span>
                       </div>
-
-                      <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
-                        {formatTimeAgo(post.createdAt)} · Movement {post.gym.name.replace("Movement ", "")}
-                      </div>
+                      <p className="text-sm text-gray-900 mb-2">{session.title}</p>
+                      <p className="text-xs text-gray-600 mb-3">{session.location}</p>
                     </div>
                   </div>
 
-                  <h2 className="self-stretch [font-family:'SF_Pro-Semibold',Helvetica] font-normal text-black text-2xl">
-                    {post.title}
-                  </h2>
-
-                  {post.description && (
-                    <p className="self-stretch [font-family:'SF_Pro-Regular',Helvetica] font-normal text-gray-600 text-sm">
-                      {post.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-around py-3 border-t border-gray-100">
                     <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
                       <span>
-                        Total send
+                        Sends
                         <br />
                       </span>
                       <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {post.totalSend}
+                        {session.stats.totalSends}
                       </span>
                     </div>
-
                     <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
                       <span>
-                        Routes climbed
+                        Routes
                         <br />
                       </span>
                       <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {post.routesClimbed}
+                        {session.stats.routesClimbed}
                       </span>
                     </div>
-
                     <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
                       <span>
                         Time
                         <br />
                       </span>
                       <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {formatDuration(post.duration)}
+                        {session.stats.duration}
                       </span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            )) : (
+            )}) : (
               <div className="w-full text-center py-12">
                 <p className="text-gray-600 text-lg">No climbing sessions yet</p>
                 <p className="text-gray-500 text-sm mt-2">Start logging your climbs to see them here!</p>
@@ -252,6 +270,11 @@ export const Home = (): JSX.Element => {
           <Separator className="w-36 h-[5px] bg-black rounded-[100px]" />
         </div>
       </div>
+
+      <CreateSessionModal
+        isOpen={createSessionOpen}
+        onClose={() => setCreateSessionOpen(false)}
+      />
     </main>
   );
 };
