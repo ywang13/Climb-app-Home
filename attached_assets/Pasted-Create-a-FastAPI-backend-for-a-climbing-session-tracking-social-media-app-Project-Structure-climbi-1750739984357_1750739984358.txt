@@ -1,0 +1,112 @@
+Create a FastAPI backend for a climbing session tracking social media app.
+Project Structure:
+climbing-social-backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── session.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── session.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── endpoints/
+│   │   │   ├── __init__.py
+│   │   │   ├── users.py
+│   │   │   ├── sessions.py
+│   │   │   └── feed.py
+│   │   └── deps.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   └── security.py
+│   └── db/
+│       ├── __init__.py
+│       ├── base.py
+│       └── session.py
+├── alembic/
+├── requirements.txt
+├── .env
+└── README.md
+Requirements.txt:
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+alembic==1.12.1
+python-dotenv==1.0.0
+Database Models (PostgreSQL with SQLAlchemy):
+
+User model with: id, username, email, hashed_password, avatar_url, created_at, updated_at
+Session model with: id, user_id, location, title, total_sends, routes_climbed, duration_minutes, created_at
+
+API Endpoints:
+
+Feed Endpoint:
+
+GET /api/feed - Returns paginated climbing sessions with user info
+Query params: page (default=1), limit (default=20)
+Response format:
+
+json{
+  "sessions": [
+    {
+      "id": "uuid",
+      "user": {
+        "id": "uuid",
+        "username": "user1",
+        "avatar_url": "https://..."
+      },
+      "location": "Movement Santa Clara",
+      "created_at": "2024-01-23T09:00:00Z",
+      "title": "Morning session",
+      "stats": {
+        "total_sends": 11,
+        "routes_climbed": 12,
+        "duration": "1h 56m"
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "total_pages": 5,
+    "has_more": true
+  }
+}
+
+Session Endpoints:
+
+POST /api/sessions - Create new session
+GET /api/sessions/{session_id} - Get session details
+PUT /api/sessions/{session_id} - Update session
+DELETE /api/sessions/{session_id} - Delete session
+
+
+User Endpoints:
+
+POST /api/users/register - Register new user
+POST /api/users/login - Login (returns JWT token)
+GET /api/users/me - Get current user
+GET /api/users/{user_id} - Get user profile
+
+
+
+Core Features:
+
+JWT authentication with Bearer tokens
+Password hashing with bcrypt
+Input validation with Pydantic schemas
+CORS middleware configured for localhost:3000
+Environment variables for configuration
+Alembic for database migrations
+Proper error handling with HTTP exceptions
+Convert duration_minutes to "Xh Ym" format in responses
