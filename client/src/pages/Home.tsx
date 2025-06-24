@@ -175,10 +175,7 @@ export const Home = (): JSX.Element => {
           </div>
         </div>
 
-        {/* Bottom indicator */}
-        <div className="absolute w-full max-w-[440px] h-[34px] bottom-0 left-0 bg-white flex items-center justify-center">
-          <Separator className="w-36 h-[5px] bg-black rounded-[100px]" />
-        </div>
+        
       </div>
     </main>
   );
