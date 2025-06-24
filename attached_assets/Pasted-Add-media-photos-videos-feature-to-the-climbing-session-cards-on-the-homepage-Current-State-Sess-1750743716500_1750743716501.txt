@@ -1,0 +1,105 @@
+Add media (photos/videos) feature to the climbing session cards on the homepage.
+Current State: Session cards show user info, location, title, and stats (total sends, routes climbed, time).
+Goal: Add a horizontal scrollable media gallery to each session card showing photos/videos, as shown in the mockup.
+Database Changes:
+
+Create a new media table with columns:
+
+id (primary key)
+session_id (foreign key to sessions table)
+url (string - URL to stored media)
+type (enum: 'photo' or 'video')
+thumbnail_url (string - for video thumbnails)
+duration (integer - video duration in seconds, null for photos)
+order_index (integer - for ordering media)
+created_at (timestamp)
+
+
+
+Schema Updates:
+
+Update shared/schema.ts to include:
+
+Media table definition
+Media type interface
+Update FeedSession interface to include media array
+
+
+
+Backend Updates:
+
+Update GET /api/feed endpoint to include media for each session:
+
+json{
+  "sessions": [{
+    "id": "uuid",
+    "user": {...},
+    "location": "...",
+    "title": "...",
+    "stats": {...},
+    "media": [
+      {
+        "id": 1,
+        "url": "https://...",
+        "type": "photo",
+        "thumbnail_url": null,
+        "duration": null
+      },
+      {
+        "id": 2,
+        "url": "https://...",
+        "type": "video", 
+        "thumbnail_url": "https://...",
+        "duration": 23
+      }
+    ]
+  }]
+}
+
+Add new endpoint POST /api/sessions/:sessionId/media for uploading media (implement later)
+Update storage.ts to:
+
+Join media table when fetching sessions
+Include media in getFeed query
+Add sample media data to in-memory database
+
+
+
+Frontend Updates:
+
+Create MediaGallery component that:
+
+Shows horizontal scrollable list of media thumbnails
+Displays video duration overlay (e.g., "0:23") on video thumbnails
+Each media item should be ~150px wide with 8px gap
+Shows placeholder if no media exists
+
+
+Update SessionCard component to:
+
+Include MediaGallery between title and stats
+Only show MediaGallery if session has media
+
+
+Sample media for testing:
+
+Use placeholder climbing images from Unsplash
+Add 2-3 media items per session
+Mix of photos and videos (use static images for video thumbnails)
+Video durations between 10-60 seconds
+
+
+
+Styling Requirements:
+
+Media gallery height: ~200px
+Rounded corners on media items
+Video duration badge: white text on semi-transparent black background in top-right corner
+Smooth horizontal scroll with no scrollbar visible
+Touch-friendly scrolling for mobile
+
+Sample Unsplash URLs for testing:
+https://images.unsplash.com/photo-1522163182402-834f871fd851
+https://images.unsplash.com/photo-1516592673884-4a382d1124c2  
+https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d
+Make sure the media feature integrates seamlessly with the existing session cards without breaking current functionality.

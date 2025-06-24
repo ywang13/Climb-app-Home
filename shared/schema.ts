@@ -30,14 +30,33 @@ export const sessions = pgTable("sessions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const media = pgTable("media", {
+  id: serial("id").primaryKey(),
+  sessionId: integer("session_id").references(() => sessions.id).notNull(),
+  url: text("url").notNull(),
+  type: text("type", { enum: ["photo", "video"] }).notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  duration: integer("duration"), // in seconds for videos, null for photos
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
 }));
 
-export const sessionsRelations = relations(sessions, ({ one }) => ({
+export const sessionsRelations = relations(sessions, ({ one, many }) => ({
   user: one(users, {
     fields: [sessions.userId],
     references: [users.id],
+  }),
+  media: many(media),
+}));
+
+export const mediaRelations = relations(media, ({ one }) => ({
+  session: one(sessions, {
+    fields: [media.sessionId],
+    references: [sessions.id],
   }),
 }));
 
@@ -52,11 +71,26 @@ export const insertSessionSchema = createInsertSchema(sessions).omit({
   createdAt: true 
 });
 export const selectSessionSchema = createSelectSchema(sessions);
+export const insertMediaSchema = createInsertSchema(media).omit({ 
+  id: true, 
+  createdAt: true 
+});
+export const selectMediaSchema = createSelectSchema(media);
 
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 export type InsertSession = typeof sessions.$inferInsert;
 export type SelectSession = typeof sessions.$inferSelect;
+export type InsertMedia = typeof media.$inferInsert;
+export type SelectMedia = typeof media.$inferSelect;
+
+export type SessionMedia = {
+  id: number;
+  url: string;
+  type: "photo" | "video";
+  thumbnailUrl: string | null;
+  duration: number | null; // in seconds for videos
+};
 
 export type FeedSession = {
   id: number;
@@ -73,6 +107,7 @@ export type FeedSession = {
     routesClimbed: number;
     duration: string; // formatted as "Xh Ym"
   };
+  media: SessionMedia[];
 };
 
 export type FeedResponse = {

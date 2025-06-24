@@ -31,7 +31,9 @@ This is a full-stack climbing session tracking social media application built wi
 - **Current Schema**: 
   - Users table: id, username, email, hashedPassword, avatarUrl, createdAt, updatedAt
   - Sessions table: id, userId, location, title, totalSends, routesClimbed, durationMinutes, createdAt
+  - Media table: id, sessionId, url, type, thumbnailUrl, duration, orderIndex, createdAt
 - **Authentication**: JWT-based with bcrypt password hashing
+- **Media Support**: Photos and videos with horizontal scrollable galleries
 
 ## Key Components
 
@@ -55,7 +57,8 @@ This is a full-stack climbing session tracking social media application built wi
 - **API Endpoints**:
   - User management: `/api/users/register`, `/api/users/login`, `/api/users/me`, `/api/users/:userId`
   - Session management: `/api/sessions` (CRUD operations with authentication)
-  - Social feed: `/api/feed` (paginated climbing sessions)
+  - Media management: `/api/sessions/:sessionId/media` (add photos/videos to sessions)
+  - Social feed: `/api/feed` (paginated climbing sessions with media)
   - Legacy compatibility: `/api/timeline` (backwards compatibility)
 
 ## Data Flow
@@ -106,16 +109,22 @@ This is a full-stack climbing session tracking social media application built wi
 
 ## Recent Changes
 
+✓ Added media photos/videos feature to climbing session cards (June 24, 2025)
+✓ Created media table with photo/video support and horizontal scrollable gallery  
+✓ Enhanced feed endpoint to include media with proper thumbnails and video duration
+✓ Implemented MediaGallery component with video duration overlays
+✓ Updated SessionCard component to display media seamlessly
+✓ Added media upload endpoint for authenticated users
 ✓ Retuned backend with FastAPI-style architecture (June 24, 2025)
 ✓ Added JWT authentication system with user registration/login
 ✓ Implemented comprehensive session CRUD operations  
 ✓ Enhanced database schema with proper user and session management
 ✓ Added paginated feed endpoint with social media features
 ✓ CORS middleware configuration for cross-origin requests
-→ Updated storage layer with PostgreSQL and in-memory implementations
 
 ## Changelog
 
+- June 24, 2025: Added media photos/videos feature with horizontal scrollable galleries, video duration overlays, and media upload endpoints
 - June 24, 2025: Major backend overhaul - FastAPI-style API endpoints, JWT authentication, enhanced database schema
 - June 22, 2025: Initial setup
 

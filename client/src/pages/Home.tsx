@@ -1,14 +1,14 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { TimelineSession } from "@/../../shared/schema";
+import { Card, CardContent } from "@/components/ui/card";
+import { FeedResponse } from "@/../../shared/schema";
+import SessionCard from "@/components/SessionCard";
 
-async function fetchTimeline(): Promise<TimelineSession[]> {
-  const response = await fetch("/api/timeline");
+async function fetchFeed(): Promise<FeedResponse> {
+  const response = await fetch("/api/feed");
   if (!response.ok) {
-    throw new Error("Failed to fetch timeline");
+    throw new Error("Failed to fetch feed");
   }
   return response.json();
 }
@@ -30,20 +30,10 @@ function formatTimeAgo(date: Date): string {
   }
 }
 
-function formatDuration(minutes: number): string {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  
-  if (hours === 0) {
-    return `${mins}m`;
-  }
-  return `${hours}h ${mins}m`;
-}
-
 export const Home = (): JSX.Element => {
-  const { data: posts, isLoading, error } = useQuery({
-    queryKey: ["timeline"],
-    queryFn: fetchTimeline,
+  const { data: feedData, isLoading, error } = useQuery({
+    queryKey: ["feed"],
+    queryFn: fetchFeed,
   });
 
   if (isLoading) {
@@ -168,76 +158,14 @@ export const Home = (): JSX.Element => {
 
       {/* Content */}
       <div className="w-full max-w-[440px] h-[806px] top-[150px] absolute left-0">
-        <div className="flex flex-col w-full items-center gap-2">
-          <div className="flex flex-col items-start gap-8 w-full">
-            {posts && posts.length > 0 ? posts.map((post) => (
-              <Card key={post.id} className="w-full rounded-none shadow-none">
-                <CardContent className="flex flex-col items-start gap-4 p-4">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="w-[45px] h-[45px]">
-                      <AvatarImage
-                        src={post.user.profilePicture || "/figmaAssets/intersect-3.png"}
-                        alt={`${post.user.username}'s avatar`}
-                      />
-                      <AvatarFallback>
-                        {post.user.username.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex flex-col items-start gap-2">
-                      <div className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-black text-base">
-                        {post.user.username}
-                      </div>
-
-                      <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
-                        {formatTimeAgo(post.createdAt)} · Movement {post.gym.name.replace("Movement ", "")}
-                      </div>
-                    </div>
-                  </div>
-
-                  <h2 className="self-stretch [font-family:'SF_Pro-Semibold',Helvetica] font-normal text-black text-2xl">
-                    {post.title}
-                  </h2>
-
-                  {post.description && (
-                    <p className="self-stretch [font-family:'SF_Pro-Regular',Helvetica] font-normal text-gray-600 text-sm">
-                      {post.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center gap-4">
-                    <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
-                      <span>
-                        Total send
-                        <br />
-                      </span>
-                      <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {post.totalSend}
-                      </span>
-                    </div>
-
-                    <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
-                      <span>
-                        Routes climbed
-                        <br />
-                      </span>
-                      <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {post.routesClimbed}
-                      </span>
-                    </div>
-
-                    <div className="[font-family:'SF_Pro-Regular',Helvetica] font-normal text-black text-xs">
-                      <span>
-                        Time
-                        <br />
-                      </span>
-                      <span className="[font-family:'SF_Pro-Bold',Helvetica] font-bold text-base">
-                        {formatDuration(post.duration)}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="space-y-4 max-w-md mx-auto">
+            {feedData?.sessions && feedData.sessions.length > 0 ? feedData.sessions.map((session) => (
+              <SessionCard 
+                key={session.id} 
+                session={session} 
+                timeAgo={formatTimeAgo(session.createdAt)}
+              />
             )) : (
               <div className="w-full text-center py-12">
                 <p className="text-gray-600 text-lg">No climbing sessions yet</p>

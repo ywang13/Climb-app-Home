@@ -14,6 +14,7 @@ import {
   registerUserSchema, 
   loginUserSchema, 
   insertSessionSchema,
+  insertMediaSchema,
   type FeedResponse 
 } from "../shared/schema";
 
@@ -262,6 +263,42 @@ export function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Error deleting session:", error);
       res.status(500).json({ error: "Failed to delete session" });
+    }
+  });
+
+  // POST /api/sessions/:sessionId/media - Add media to session (authenticated)
+  const addMediaSchema = insertMediaSchema.extend({
+    url: z.string().url(),
+    type: z.enum(["photo", "video"]),
+    thumbnailUrl: z.string().url().optional(),
+    duration: z.number().min(1).optional(),
+    orderIndex: z.number().min(0).default(0),
+  });
+
+  app.post("/api/sessions/:sessionId/media", authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+      const sessionId = parseInt(req.params.sessionId);
+      if (isNaN(sessionId)) {
+        return res.status(400).json({ error: "Invalid session ID" });
+      }
+
+      // Verify session belongs to user
+      const session = await db.getSession(sessionId);
+      if (!session || session.userId !== req.user!.id) {
+        return res.status(404).json({ error: "Session not found or unauthorized" });
+      }
+
+      const data = addMediaSchema.parse(req.body);
+      const media = await db.addSessionMedia(sessionId, data);
+      
+      res.status(201).json(media);
+    } catch (error) {
+      console.error("Error adding media:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid request data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Failed to add media" });
+      }
     }
   });
 
