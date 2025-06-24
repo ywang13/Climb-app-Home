@@ -53,10 +53,10 @@ This is a full-stack web application built with a React frontend and Express.js 
 
 ## Data Flow
 
-1. **Request Flow**: Client requests → Express middleware → Route handlers → Storage layer → Database
-2. **Response Flow**: Database → Storage layer → Route handlers → JSON response → Client
-3. **Development Flow**: Vite dev server proxies API requests to Express backend
-4. **Build Flow**: Vite builds frontend static assets, esbuild bundles backend
+1. **Request Flow**: Client requests → FastAPI middleware → Route handlers → CRUD operations → Database
+2. **Response Flow**: Database → SQLAlchemy models → Pydantic schemas → JSON response → Client
+3. **Development Flow**: Vite dev server proxies API requests to FastAPI backend
+4. **Build Flow**: Vite builds frontend static assets, Python backend runs directly
 
 ## External Dependencies
 
