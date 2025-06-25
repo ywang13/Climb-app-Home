@@ -267,7 +267,7 @@ export default function SessionDetails() {
           <div className="w-10 h-1 bg-gray-300 rounded-full" />
         </div>
 
-        <div className="px-6 pb-8"></div>
+        <div className="px-6 pb-8">
           {/* Session title and info */}
           <div className="mb-4">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
