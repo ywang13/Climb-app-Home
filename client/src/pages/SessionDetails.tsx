@@ -85,17 +85,16 @@ export default function SessionDetails() {
   };
 
   const handlePanEnd = (event: any, info: PanInfo) => {
-    if (info.offset.y < -100) {
+    const threshold = 50;
+    if (info.offset.y < -threshold) {
       setIsBottomSheetExpanded(true);
-    } else if (info.offset.y > 100) {
+    } else if (info.offset.y > threshold) {
       setIsBottomSheetExpanded(false);
     }
   };
 
   const handleSheetClick = () => {
-    if (!isBottomSheetExpanded) {
-      setIsBottomSheetExpanded(true);
-    }
+    setIsBottomSheetExpanded(!isBottomSheetExpanded);
   };
 
   const handleMediaTouchStart = (e: React.TouchEvent) => {
