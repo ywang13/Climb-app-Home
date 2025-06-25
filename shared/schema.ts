@@ -26,6 +26,7 @@ export const sessions = pgTable("sessions", {
   title: text("title").notNull(),
   totalSends: integer("total_sends").default(0),
   routesClimbed: integer("routes_climbed").default(0),
+  hardestSend: text("hardest_send"),
   durationMinutes: integer("duration_minutes").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -37,6 +38,8 @@ export const media = pgTable("media", {
   type: text("type", { enum: ["photo", "video"] }).notNull(),
   thumbnailUrl: text("thumbnail_url"),
   duration: integer("duration"), // in seconds for videos, null for photos
+  routeGrade: text("route_grade"), // e.g., "V5", "V10", "5.12a"
+  routeColor: text("route_color"), // e.g., "orange", "blue", "green"
   orderIndex: integer("order_index").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -90,6 +93,8 @@ export type SessionMedia = {
   type: "photo" | "video";
   thumbnailUrl: string | null;
   duration: number | null; // in seconds for videos
+  routeGrade?: string | null;
+  routeColor?: string | null;
 };
 
 export type FeedSession = {
@@ -106,6 +111,7 @@ export type FeedSession = {
     totalSends: number;
     routesClimbed: number;
     duration: string; // formatted as "Xh Ym"
+    hardestSend?: string | null;
   };
   media: SessionMedia[];
 };

@@ -1,0 +1,120 @@
+Here's the updated prompt with those clarifications:
+
+---
+
+**Create a Session Details Page with an expandable bottom sheet for climbing statistics.**
+
+**Navigation Setup:**
+1. Add React Router or similar navigation library
+2. Make session cards on homepage clickable, navigating to `/session/:sessionId`
+3. Pass session ID to the details page
+
+**Page Structure:**
+
+1. **Full-screen media viewer:**
+   - Display session media (photos/videos) in a full-screen carousel
+   - Show current media index indicator (e.g., "1/12") in top-right
+   - Add climbing route grade badge with route color:
+     - Display grade (e.g., "V5") in white text
+     - **Circular colored background indicates the actual route hold color** (e.g., orange, blue, green, purple)
+     - This color needs to be stored per media item
+   - Include back button (←) in top-left corner
+   - **Media dots indicator at bottom:** Show pagination dots (● ● ● ● ●) on white background strip
+     - Active dot is black, inactive dots are gray
+     - Shows current position in media carousel
+   - Support swipe gestures to navigate between media
+   - For videos, show play/pause controls
+
+2. **Expandable bottom sheet with session details:**
+   
+   **Collapsed State (default):**
+   - Shows only session title (e.g., "Morning session")
+   - Date, time, and location (e.g., "March 21, 2025 at 5:44 PM • Santa Clara")
+   - Drag handle indicator at top
+   - Height: ~150px from bottom
+
+   **Expanded State:**
+   - Triggered by: tapping the sheet or dragging up
+   - Shows all climbing statistics in a 2x2 grid:
+     - Total send: 11
+     - Routes climbed: 12
+     - Hardest send: V8
+     - Time: 1h 56m
+   - Each stat has a label above and value below
+   - Smooth animation when expanding/collapsing
+   - Can be dismissed by dragging down
+
+**Database/Schema Updates:**
+
+1. **Update media table to include route information:**
+   ```sql
+   -- Add to media table:
+   route_grade VARCHAR(10) -- e.g., "V5", "V10", "5.12a"
+   route_color VARCHAR(20) -- e.g., "orange", "blue", "green", "purple"
+   ```
+
+2. **Update Media interface:**
+   ```typescript
+   interface Media {
+     id: number;
+     url: string;
+     type: 'photo' | 'video';
+     thumbnail_url?: string;
+     duration?: number;
+     route_grade?: string;  // NEW
+     route_color?: string;  // NEW
+   }
+   ```
+
+3. **Update InMemoryDatabase sample data:**
+   - Add route_grade and route_color to sample media items
+   - Use realistic climbing colors: "orange", "blue", "green", "purple", "yellow", "red", "black", "pink"
+
+**Implementation Requirements:**
+
+1. **Create SessionDetailsPage component:**
+   ```typescript
+   interface SessionDetailsProps {
+     sessionId: string;
+   }
+   ```
+
+2. **Fetch session data:**
+   - Use existing GET `/api/sessions/:sessionId` endpoint
+   - Include media array with route information
+
+3. **Route color badge styling:**
+   ```css
+   /* Example for route grade badge */
+   .route-badge {
+     background-color: var(--route-color); /* Dynamic based on route_color */
+     color: white;
+     border-radius: 50%;
+     padding: 8px 12px;
+   }
+   ```
+
+4. **Media dots indicator:**
+   - Position at bottom of screen above the bottom sheet
+   - White background strip with padding
+   - Dots change opacity/color based on active state
+   - Maximum 5-6 dots visible, with scaling for more media
+
+5. **Bottom sheet behavior:**
+   - Use a library like `react-spring` or `framer-motion` for smooth animations
+   - Implement drag gestures with touch/mouse support
+   - Snap points: collapsed (~150px) and expanded (~300px)
+   - Add backdrop blur when expanded
+
+6. **Add hardest_send field to sessions:**
+   - Add to sessions table (string, nullable)
+   - Update schema and types accordingly
+
+**Styling Requirements:**
+- Route color badge has solid color background with white text
+- Media dots on white background strip for visibility
+- Dark overlay on media for better text visibility
+- Rounded top corners on bottom sheet
+- Smooth transitions between states
+
+Make sure the page is fully functional with smooth animations and follows the design exactly as shown in the screenshots.

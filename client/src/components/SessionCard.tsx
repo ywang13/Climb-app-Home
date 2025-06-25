@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { FeedSession } from "@/../../shared/schema";
 import MediaGallery from "./MediaGallery";
 
@@ -7,8 +8,17 @@ interface SessionCardProps {
 }
 
 export default function SessionCard({ session, timeAgo }: SessionCardProps) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/session/${session.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+    <div 
+      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+      onClick={handleCardClick}
+    >
       {/* Header with user info */}
       <div className="flex items-center gap-3 mb-3">
         <div className="relative">
@@ -56,7 +66,7 @@ export default function SessionCard({ session, timeAgo }: SessionCardProps) {
         
         {/* Media Gallery */}
         {session.media && session.media.length > 0 && (
-          <div>
+          <div onClick={(e) => e.stopPropagation()}>
             <MediaGallery media={session.media} />
           </div>
         )}

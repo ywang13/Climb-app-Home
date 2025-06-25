@@ -1,0 +1,242 @@
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { motion, PanInfo } from "framer-motion";
+import { ChevronLeft, Play, Pause } from "lucide-react";
+import { SelectSession, SelectUser, SelectMedia } from "@/../../shared/schema";
+
+interface SessionWithDetails extends SelectSession {
+  user: SelectUser;
+  media: SelectMedia[];
+}
+
+export default function SessionDetails() {
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const navigate = useNavigate();
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const { data: session, isLoading } = useQuery<SessionWithDetails>({
+    queryKey: ["/api/sessions", sessionId],
+    enabled: !!sessionId,
+  });
+
+  if (isLoading || !session) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    }).format(new Date(date));
+  };
+
+  const formatDuration = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  };
+
+  const handlePanEnd = (event: any, info: PanInfo) => {
+    if (info.offset.y < -100) {
+      setIsBottomSheetExpanded(true);
+    } else if (info.offset.y > 100) {
+      setIsBottomSheetExpanded(false);
+    }
+  };
+
+  const getRouteColorClass = (color: string | null) => {
+    const colorMap: Record<string, string> = {
+      orange: "bg-orange-500",
+      blue: "bg-blue-500",
+      green: "bg-green-500",
+      purple: "bg-purple-500",
+      red: "bg-red-500",
+      yellow: "bg-yellow-500",
+      black: "bg-black",
+      pink: "bg-pink-500",
+    };
+    return colorMap[color || ""] || "bg-gray-500";
+  };
+
+  const currentMedia = session.media[currentMediaIndex];
+
+  return (
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      {/* Media Display */}
+      <div className="relative w-full h-screen">
+        {currentMedia && (
+          <>
+            {currentMedia.type === "photo" ? (
+              <img
+                src={currentMedia.url}
+                alt="Climbing session"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="relative w-full h-full">
+                <video
+                  src={currentMedia.url}
+                  className="w-full h-full object-cover"
+                  controls={false}
+                  autoPlay={isVideoPlaying}
+                  muted
+                  loop
+                />
+                <div 
+                  className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                  onClick={() => setIsVideoPlaying(!isVideoPlaying)}
+                >
+                  {!isVideoPlaying && (
+                    <div className="bg-black bg-opacity-50 rounded-full p-4">
+                      <Play className="w-12 h-12 text-white" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Top overlay with back button and media counter */}
+        <div className="absolute top-0 left-0 right-0 z-20 p-4 bg-gradient-to-b from-black/50 to-transparent">
+          <div className="flex justify-between items-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-2"
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-white text-sm font-medium">
+                {currentMediaIndex + 1}/{session.media.length}
+              </span>
+              {currentMedia?.routeGrade && (
+                <div className={`${getRouteColorClass(currentMedia.routeColor)} rounded-full px-3 py-1`}>
+                  <span className="text-white text-sm font-bold">
+                    {currentMedia.routeGrade}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Media dots indicator */}
+        {session.media.length > 1 && (
+          <div className="absolute bottom-32 left-0 right-0 z-20">
+            <div className="bg-white bg-opacity-90 mx-4 rounded-full py-2 px-4">
+              <div className="flex justify-center items-center gap-2">
+                {session.media.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentMediaIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentMediaIndex ? "bg-black" : "bg-gray-400"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Swipe areas for navigation */}
+        {session.media.length > 1 && (
+          <>
+            <div
+              className="absolute left-0 top-0 w-1/3 h-full z-10"
+              onClick={() => {
+                if (currentMediaIndex > 0) {
+                  setCurrentMediaIndex(currentMediaIndex - 1);
+                }
+              }}
+            />
+            <div
+              className="absolute right-0 top-0 w-1/3 h-full z-10"
+              onClick={() => {
+                if (currentMediaIndex < session.media.length - 1) {
+                  setCurrentMediaIndex(currentMediaIndex + 1);
+                }
+              }}
+            />
+          </>
+        )}
+      </div>
+
+      {/* Bottom Sheet */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl"
+        initial={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
+        animate={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        drag="y"
+        dragConstraints={{ top: 0, bottom: "calc(100vh - 150px)" }}
+        onDragEnd={handlePanEnd}
+      >
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1 bg-gray-300 rounded-full" />
+        </div>
+
+        <div className="px-6 pb-6">
+          {/* Session title and info */}
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {session.title}
+            </h1>
+            <p className="text-gray-600 text-sm">
+              {formatDate(session.createdAt)} • {session.location}
+            </p>
+          </div>
+
+          {/* Expanded content */}
+          {isBottomSheetExpanded && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="grid grid-cols-2 gap-6 mt-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {session.totalSends}
+                  </div>
+                  <div className="text-sm text-gray-500">Total send</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {session.routesClimbed}
+                  </div>
+                  <div className="text-sm text-gray-500">Routes climbed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {session.hardestSend || "N/A"}
+                  </div>
+                  <div className="text-sm text-gray-500">Hardest send</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {formatDuration(session.durationMinutes)}
+                  </div>
+                  <div className="text-sm text-gray-500">Time</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
