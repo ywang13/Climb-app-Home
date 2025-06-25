@@ -204,7 +204,10 @@ export function registerRoutes(app: Express) {
         return res.status(400).json({ error: "Invalid session ID" });
       }
 
+      console.log("Fetching session:", sessionId);
       const session = await db.getSession(sessionId);
+      console.log("Session data:", session);
+      
       if (!session) {
         return res.status(404).json({ error: "Session not found" });
       }

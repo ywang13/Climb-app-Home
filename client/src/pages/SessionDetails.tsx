@@ -18,9 +18,11 @@ export default function SessionDetails() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const { data: session, isLoading, error } = useQuery<SessionWithDetails>({
-    queryKey: ["/api/sessions", sessionId],
+    queryKey: [`/api/sessions/${sessionId}`],
     enabled: !!sessionId,
   });
+
+  console.log("SessionDetails Debug:", { sessionId, session, isLoading, error });
 
   if (error) {
     console.error("Error loading session:", error);
@@ -158,9 +160,11 @@ export default function SessionDetails() {
               <ChevronLeft className="w-6 h-6 text-white" />
             </button>
             <div className="flex items-center gap-2">
-              <span className="text-white text-sm font-medium">
-                {currentMediaIndex + 1}/{session.media.length}
-              </span>
+              {session.media && session.media.length > 0 && (
+                <span className="text-white text-sm font-medium">
+                  {currentMediaIndex + 1}/{session.media.length}
+                </span>
+              )}
               {currentMedia?.routeGrade && (
                 <div className={`${getRouteColorClass(currentMedia.routeColor)} rounded-full px-3 py-1`}>
                   <span className="text-white text-sm font-bold">
