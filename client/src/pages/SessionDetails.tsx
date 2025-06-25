@@ -248,7 +248,7 @@ export default function SessionDetails() {
 
       {/* Bottom Sheet */}
       <motion.div
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl w-full bottom-sheet"
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl bottom-sheet"
         initial={{ y: "calc(100% - 150px)" }}
         animate={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
@@ -259,7 +259,7 @@ export default function SessionDetails() {
         style={{ 
           height: isBottomSheetExpanded ? "auto" : "150px",
           maxHeight: isBottomSheetExpanded ? "calc(100vh - 32px)" : "150px",
-          cursor: isBottomSheetExpanded ? "default" : "pointer" 
+          cursor: isBottomSheetExpanded ? "default" : "pointer"
         }}
       >
         {/* Drag handle */}

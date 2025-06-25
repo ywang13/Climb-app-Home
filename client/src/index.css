@@ -29,14 +29,11 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Bottom sheet full width without overflow */
+/* Bottom sheet full width spanning entire phone screen */
 .bottom-sheet {
-  width: 100% !important;
-  max-width: 100% !important;
-  left: 0 !important;
-  right: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+  width: 100vw !important;
+  max-width: none !important;
+  margin: 0 !important;
   box-sizing: border-box !important;
 }
 
