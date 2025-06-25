@@ -228,9 +228,9 @@ export default function SessionDetails() {
         {/* Media dots indicator */}
         {session.media.length > 1 && (
           <motion.div 
-            className="absolute left-1/2 transform -translate-x-1/2 z-20"
+            className="fixed left-1/2 transform -translate-x-1/2 z-20"
             animate={{ 
-              bottom: isBottomSheetExpanded ? "calc(100vh - 32px)" : "176px" 
+              bottom: isBottomSheetExpanded ? "calc(100vh - 64px)" : "182px" 
             }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
