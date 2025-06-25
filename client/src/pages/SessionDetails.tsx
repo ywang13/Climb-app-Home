@@ -201,9 +201,11 @@ export default function SessionDetails() {
             </button>
             <div className="flex items-center gap-2">
               {session.media && session.media.length > 0 && (
-                <span className="text-white text-sm font-medium">
-                  {currentMediaIndex + 1}/{session.media.length}
-                </span>
+                <div className="bg-black bg-opacity-50 rounded-full px-3 py-1">
+                  <span className="text-white text-sm font-medium">
+                    {currentMediaIndex + 1}/{session.media.length}
+                  </span>
+                </div>
               )}
               {currentMedia?.routeGrade && (
                 <div className={`${getRouteColorClass(currentMedia.routeColor)} rounded-full px-3 py-1`}>
@@ -218,55 +220,35 @@ export default function SessionDetails() {
 
         {/* Media dots indicator */}
         {session.media.length > 1 && (
-          <div className="absolute bottom-32 left-0 right-0 z-20">
-            <div className="bg-white bg-opacity-90 mx-4 rounded-full py-2 px-4">
-              <div className="flex justify-center items-center gap-2">
-                {session.media.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentMediaIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentMediaIndex ? "bg-black" : "bg-gray-400"
-                    }`}
-                  />
-                ))}
-              </div>
+          <div className="absolute bottom-40 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-white bg-opacity-90 rounded-full px-4 py-2 flex gap-2">
+              {session.media.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToMedia(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === currentMediaIndex ? 'bg-black' : 'bg-gray-400'
+                  }`}
+                />
+              ))}
             </div>
           </div>
         )}
 
-        {/* Swipe areas for navigation */}
-        {session.media.length > 1 && (
-          <>
-            <div
-              className="absolute left-0 top-0 w-1/3 h-full z-10"
-              onClick={() => {
-                if (currentMediaIndex > 0) {
-                  setCurrentMediaIndex(currentMediaIndex - 1);
-                }
-              }}
-            />
-            <div
-              className="absolute right-0 top-0 w-1/3 h-full z-10"
-              onClick={() => {
-                if (currentMediaIndex < session.media.length - 1) {
-                  setCurrentMediaIndex(currentMediaIndex + 1);
-                }
-              }}
-            />
-          </>
-        )}
+
       </div>
 
       {/* Bottom Sheet */}
       <motion.div
-        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl"
-        initial={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl max-w-md mx-auto"
+        initial={{ y: "calc(100% - 150px)" }}
         animate={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
-        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
         drag="y"
-        dragConstraints={{ top: 0, bottom: "calc(100vh - 150px)" }}
+        dragConstraints={{ top: 0, bottom: window.innerHeight - 150 }}
         onDragEnd={handlePanEnd}
+        onClick={handleSheetClick}
+        style={{ height: "70vh", cursor: isBottomSheetExpanded ? "default" : "pointer" }}
       >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-2">
