@@ -248,7 +248,7 @@ export default function SessionDetails() {
 
       {/* Bottom Sheet */}
       <motion.div
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl w-full"
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl max-w-md mx-auto"
         initial={{ y: "calc(100% - 150px)" }}
         animate={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
