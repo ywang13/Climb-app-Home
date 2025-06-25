@@ -1,0 +1,69 @@
+Here's a precise prompt to fix all the issues:
+
+---
+
+**Fix the Session Details Page bugs to match the original design and functionality.**
+
+**Issues to fix:**
+
+1. **Fix mobile viewport/resolution:**
+   - The page should maintain mobile app dimensions (same as homepage)
+   - Add proper viewport meta tag or CSS to ensure consistent mobile resolution
+   - Width should match the homepage card width
+
+2. **Fix media carousel functionality:**
+   - Currently showing only one fixed image - make it swipeable
+   - Implement proper carousel with all 3 media items from the session
+   - Add swipe gesture support to navigate between media
+   - Update the media index (1/3, 2/3, 3/3) when swiping
+
+3. **Add missing media dots indicator:**
+   - Add pagination dots at the bottom of the screen (above the expandable sheet)
+   - White background strip with black/gray dots
+   - Active dot should be black, inactive dots gray
+   - Should update when swiping through media
+
+4. **Add dark overlay for media counter:**
+   - Add semi-transparent dark background behind the "1/3" indicator
+   - Use rgba(0,0,0,0.5) or similar for better text visibility
+
+5. **Fix expandable sheet tap functionality:**
+   - Currently only responds to drag - add tap/click handler
+   - Tapping anywhere on the collapsed sheet should expand it
+   - Add click event listener in addition to drag
+
+6. **Fix expandable sheet positioning:**
+   - Sheet should start at the very bottom of the screen
+   - In collapsed state: bottom edge at screen bottom, showing ~150px height
+   - In expanded state: extend upward while bottom stays at screen bottom
+   - No gap should exist between sheet and screen bottom
+   - Media should not be visible under the sheet
+
+**Implementation fixes needed:**
+
+```css
+/* Fix sheet positioning */
+.bottom-sheet {
+  position: fixed;
+  bottom: 0; /* Anchored to bottom */
+  left: 0;
+  right: 0;
+  /* Remove any margin-bottom or transform that creates gap */
+}
+
+/* Media dots container */
+.media-dots {
+  position: absolute;
+  bottom: 150px; /* Above collapsed sheet */
+  background: white;
+  padding: 8px 16px;
+  border-radius: 16px;
+}
+```
+
+**Carousel implementation:**
+- Use existing media array from session data
+- Implement touch/swipe events or use a carousel library
+- Sync carousel index with media counter and dots
+
+Ensure all fixes maintain smooth animations and the exact design from the mockups.

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion, PanInfo } from "framer-motion";
@@ -16,6 +16,8 @@ export default function SessionDetails() {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const mediaContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: session, isLoading, error } = useQuery<SessionWithDetails>({
     queryKey: [`/api/sessions/${sessionId}`],
@@ -90,6 +92,39 @@ export default function SessionDetails() {
     }
   };
 
+  const handleSheetClick = () => {
+    if (!isBottomSheetExpanded) {
+      setIsBottomSheetExpanded(true);
+    }
+  };
+
+  const handleMediaTouchStart = (e: React.TouchEvent) => {
+    setDragStartX(e.touches[0].clientX);
+  };
+
+  const handleMediaTouchEnd = (e: React.TouchEvent) => {
+    if (dragStartX === null) return;
+    
+    const deltaX = e.changedTouches[0].clientX - dragStartX;
+    const threshold = 50;
+
+    if (Math.abs(deltaX) > threshold && session?.media) {
+      if (deltaX > 0 && currentMediaIndex > 0) {
+        // Swipe right - previous media
+        setCurrentMediaIndex(currentMediaIndex - 1);
+      } else if (deltaX < 0 && currentMediaIndex < session.media.length - 1) {
+        // Swipe left - next media
+        setCurrentMediaIndex(currentMediaIndex + 1);
+      }
+    }
+    
+    setDragStartX(null);
+  };
+
+  const goToMedia = (index: number) => {
+    setCurrentMediaIndex(index);
+  };
+
   const getRouteColorClass = (color: string | null) => {
     const colorMap: Record<string, string> = {
       orange: "bg-orange-500",
@@ -107,9 +142,14 @@ export default function SessionDetails() {
   const currentMedia = session.media && session.media.length > 0 ? session.media[currentMediaIndex] : null;
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
+    <div className="relative min-h-screen bg-black overflow-hidden max-w-md mx-auto">
       {/* Media Display */}
-      <div className="relative w-full h-screen">
+      <div 
+        className="relative w-full h-screen"
+        ref={mediaContainerRef}
+        onTouchStart={handleMediaTouchStart}
+        onTouchEnd={handleMediaTouchEnd}
+      >
         {currentMedia ? (
           <>
             {currentMedia.type === "photo" ? (
