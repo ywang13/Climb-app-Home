@@ -230,7 +230,7 @@ export default function SessionDetails() {
           <motion.div 
             className="fixed left-1/2 transform -translate-x-1/2 z-20"
             animate={{ 
-              bottom: isBottomSheetExpanded ? "calc(100vh - 64px)" : "182px" 
+              bottom: isBottomSheetExpanded ? "calc(100vh - 150px - 32px)" : "182px" 
             }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
           >
