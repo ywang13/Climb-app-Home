@@ -99,10 +99,12 @@ export default function SessionDetails() {
   };
 
   const handleMediaTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     setDragStartX(e.touches[0].clientX);
   };
 
   const handleMediaTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
     if (dragStartX === null) return;
     
     const deltaX = e.changedTouches[0].clientX - dragStartX;
@@ -119,6 +121,10 @@ export default function SessionDetails() {
     }
     
     setDragStartX(null);
+  };
+
+  const handleMediaTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
   };
 
   const goToMedia = (index: number) => {
@@ -148,7 +154,9 @@ export default function SessionDetails() {
         className="relative w-full h-screen"
         ref={mediaContainerRef}
         onTouchStart={handleMediaTouchStart}
+        onTouchMove={handleMediaTouchMove}
         onTouchEnd={handleMediaTouchEnd}
+        style={{ touchAction: 'none' }}
       >
         {currentMedia ? (
           <>
@@ -191,7 +199,7 @@ export default function SessionDetails() {
         )}
 
         {/* Top overlay with back button and media counter */}
-        <div className="absolute top-0 left-0 right-0 z-20 p-4 bg-gradient-to-b from-black/50 to-transparent">
+        <div className="absolute top-0 left-0 right-0 z-20 pt-12 pb-4 px-4 bg-gradient-to-b from-black/50 to-transparent">
           <div className="flex justify-between items-center">
             <button
               onClick={() => navigate(-1)}
@@ -220,7 +228,7 @@ export default function SessionDetails() {
 
         {/* Media dots indicator */}
         {session.media.length > 1 && (
-          <div className="absolute bottom-40 left-1/2 transform -translate-x-1/2 z-20">
+          <div className="absolute bottom-44 left-1/2 transform -translate-x-1/2 z-20">
             <div className="bg-white bg-opacity-90 rounded-full px-4 py-2 flex gap-2">
               {session.media.map((_, index) => (
                 <button
@@ -242,13 +250,13 @@ export default function SessionDetails() {
       <motion.div
         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl max-w-md mx-auto"
         initial={{ y: "calc(100% - 150px)" }}
-        animate={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
+        animate={{ y: isBottomSheetExpanded ? "10%" : "calc(100% - 150px)" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
         drag="y"
         dragConstraints={{ top: 0, bottom: window.innerHeight - 150 }}
         onDragEnd={handlePanEnd}
         onClick={handleSheetClick}
-        style={{ height: "70vh", cursor: isBottomSheetExpanded ? "default" : "pointer" }}
+        style={{ height: "90vh", cursor: isBottomSheetExpanded ? "default" : "pointer" }}
       >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-2">
