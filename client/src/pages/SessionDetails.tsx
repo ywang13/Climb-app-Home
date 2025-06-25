@@ -17,15 +17,48 @@ export default function SessionDetails() {
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
-  const { data: session, isLoading } = useQuery<SessionWithDetails>({
+  const { data: session, isLoading, error } = useQuery<SessionWithDetails>({
     queryKey: ["/api/sessions", sessionId],
     enabled: !!sessionId,
   });
 
-  if (isLoading || !session) {
+  if (error) {
+    console.error("Error loading session:", error);
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+        <div className="text-white text-center">
+          <p>Error loading session</p>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-4 bg-white text-black px-4 py-2 rounded"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Loading session...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-center">
+          <p>Session not found</p>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-4 bg-white text-black px-4 py-2 rounded"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
@@ -69,13 +102,13 @@ export default function SessionDetails() {
     return colorMap[color || ""] || "bg-gray-500";
   };
 
-  const currentMedia = session.media[currentMediaIndex];
+  const currentMedia = session.media && session.media.length > 0 ? session.media[currentMediaIndex] : null;
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
       {/* Media Display */}
       <div className="relative w-full h-screen">
-        {currentMedia && (
+        {currentMedia ? (
           <>
             {currentMedia.type === "photo" ? (
               <img
@@ -106,6 +139,13 @@ export default function SessionDetails() {
               </div>
             )}
           </>
+        ) : (
+          <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+            <div className="text-white text-center">
+              <h2 className="text-xl font-bold mb-2">{session.title}</h2>
+              <p>No media for this session</p>
+            </div>
+          </div>
         )}
 
         {/* Top overlay with back button and media counter */}
