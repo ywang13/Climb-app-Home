@@ -248,21 +248,15 @@ export default function SessionDetails() {
 
       {/* Bottom Sheet */}
       <motion.div
-        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl"
+        className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl max-w-md mx-auto"
         initial={{ y: "calc(100% - 150px)" }}
-        animate={{ y: isBottomSheetExpanded ? "5%" : "calc(100% - 150px)" }}
+        animate={{ y: isBottomSheetExpanded ? "10%" : "calc(100% - 150px)" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
         drag="y"
         dragConstraints={{ top: 0, bottom: window.innerHeight - 150 }}
         onDragEnd={handlePanEnd}
         onClick={handleSheetClick}
-        style={{ 
-          height: "95vh", 
-          cursor: isBottomSheetExpanded ? "default" : "pointer",
-          maxWidth: "428px",
-          left: "50%",
-          transform: "translateX(-50%)"
-        }}
+        style={{ height: "90vh", cursor: isBottomSheetExpanded ? "default" : "pointer" }}
       >
         {/* Drag handle */}
         <div className="flex justify-center pt-3 pb-2">
