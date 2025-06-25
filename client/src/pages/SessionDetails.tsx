@@ -227,7 +227,13 @@ export default function SessionDetails() {
 
         {/* Media dots indicator */}
         {session.media.length > 1 && (
-          <div className="absolute bottom-44 left-1/2 transform -translate-x-1/2 z-20">
+          <motion.div 
+            className="absolute left-1/2 transform -translate-x-1/2 z-20"
+            animate={{ 
+              bottom: isBottomSheetExpanded ? "calc(100vh - 32px)" : "176px" 
+            }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          >
             <div className="bg-white bg-opacity-90 rounded-full px-4 py-2 flex gap-2">
               {session.media.map((_, index) => (
                 <button
@@ -239,7 +245,7 @@ export default function SessionDetails() {
                 />
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
 
@@ -250,9 +256,15 @@ export default function SessionDetails() {
         className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-30 shadow-2xl bottom-sheet"
         initial={{ y: "calc(100% - 150px)" }}
         animate={{ y: isBottomSheetExpanded ? 0 : "calc(100% - 150px)" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        transition={{ 
+          type: "spring", 
+          damping: 25, 
+          stiffness: 200,
+          duration: isBottomSheetExpanded ? 0.6 : 0.4
+        }}
         drag="y"
         dragConstraints={{ top: 0, bottom: window.innerHeight - 150 }}
+        dragElastic={{ top: 0.1, bottom: 0.1 }}
         onDragEnd={handlePanEnd}
         onClick={handleSheetClick}
         style={{ 
