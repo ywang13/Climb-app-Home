@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { FeedSession } from "@/../../shared/schema";
 import MediaGallery from "./MediaGallery";
 
@@ -8,10 +8,10 @@ interface SessionCardProps {
 }
 
 export default function SessionCard({ session, timeAgo }: SessionCardProps) {
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
 
   const handleCardClick = () => {
-    navigate(`/session/${session.id}`);
+    setLocation(`/session/${session.id}`);
   };
 
   return (

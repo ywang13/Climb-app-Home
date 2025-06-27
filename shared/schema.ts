@@ -8,6 +8,9 @@ export const users = pgTable("users", {
   email: text("email").unique().notNull(),
   hashedPassword: text("hashed_password").notNull(),
   avatarUrl: text("avatar_url"),
+  height: integer("height"), // height in cm
+  reach: integer("reach"), // reach in cm (can be positive or negative)
+  bio: text("bio"), // user bio/description
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

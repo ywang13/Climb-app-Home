@@ -9,6 +9,8 @@ export interface Database {
   getUser(id: number): Promise<SelectUser | undefined>;
   getUserByEmail(email: string): Promise<SelectUser | undefined>;
   createUser(username: string, email: string, hashedPassword: string, avatarUrl?: string): Promise<SelectUser>;
+  updateUserProfile(userId: number, updates: { height?: number; reach?: number; bio?: string }): Promise<SelectUser | undefined>;
+  getUserSessions(userId: number): Promise<FeedSession[]>;
   
   // Session operations
   getFeed(page: number, limit: number): Promise<{ sessions: FeedSession[]; total: number }>;
@@ -51,6 +53,73 @@ class DrizzleDatabase implements Database {
       avatarUrl,
     }).returning();
     return result[0];
+  }
+
+  async updateUserProfile(userId: number, updates: { height?: number; reach?: number; bio?: string }): Promise<SelectUser | undefined> {
+    const result = await this.db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async getUserSessions(userId: number): Promise<FeedSession[]> {
+    const result = await this.db
+      .select({
+        id: sessions.id,
+        title: sessions.title,
+        location: sessions.location,
+        totalSends: sessions.totalSends,
+        routesClimbed: sessions.routesClimbed,
+        hardestSend: sessions.hardestSend,
+        durationMinutes: sessions.durationMinutes,
+        createdAt: sessions.createdAt,
+        user: {
+          id: users.id,
+          username: users.username,
+          avatarUrl: users.avatarUrl,
+        },
+      })
+      .from(sessions)
+      .leftJoin(users, eq(sessions.userId, users.id))
+      .where(eq(sessions.userId, userId))
+      .orderBy(desc(sessions.createdAt));
+
+    // Get media for each session
+    const sessionsWithMedia = await Promise.all(
+      result.map(async (session) => {
+        const sessionMedia = await this.db
+          .select()
+          .from(media)
+          .where(eq(media.sessionId, session.id));
+
+        return {
+          id: session.id,
+          user: session.user!,
+          location: session.location,
+          createdAt: session.createdAt!,
+          title: session.title,
+          stats: {
+            totalSends: session.totalSends || 0,
+            routesClimbed: session.routesClimbed || 0,
+            duration: this.formatDuration(session.durationMinutes),
+            hardestSend: session.hardestSend,
+          },
+          media: sessionMedia.map(m => ({
+            id: m.id,
+            url: m.url,
+            type: m.type as "photo" | "video",
+            thumbnailUrl: m.thumbnailUrl,
+            duration: m.duration,
+            routeGrade: m.routeGrade,
+            routeColor: m.routeColor,
+          })),
+        };
+      })
+    );
+
+    return sessionsWithMedia;
   }
 
   async getFeed(page: number, limit: number): Promise<{ sessions: FeedSession[]; total: number }> {
@@ -244,6 +313,9 @@ class InMemoryDatabase implements Database {
         email: "alex@example.com",
         hashedPassword: "$2b$12$sample.hashed.password.here",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+        height: 178,
+        reach: 2,
+        bio: "Documenting my ascent and falling. (Sorry, climbing has become my entire personality)",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -253,6 +325,9 @@ class InMemoryDatabase implements Database {
         email: "sarah@example.com",
         hashedPassword: "$2b$12$sample.hashed.password.here",
         avatarUrl: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=100&h=100&fit=crop&crop=face",
+        height: 165,
+        reach: -3,
+        bio: "Crushing it one route at a time",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -409,11 +484,63 @@ class InMemoryDatabase implements Database {
       email,
       hashedPassword,
       avatarUrl: avatarUrl || null,
+      height: null,
+      reach: null,
+      bio: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     this.users.push(user);
     return user;
+  }
+
+  async updateUserProfile(userId: number, updates: { height?: number; reach?: number; bio?: string }): Promise<SelectUser | undefined> {
+    const userIndex = this.users.findIndex(user => user.id === userId);
+    if (userIndex === -1) return undefined;
+    
+    this.users[userIndex] = {
+      ...this.users[userIndex],
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    return this.users[userIndex];
+  }
+
+  async getUserSessions(userId: number): Promise<FeedSession[]> {
+    const userSessions = this.sessions
+      .filter(session => session.userId === userId)
+      .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
+
+    return userSessions.map(session => {
+      const sessionMedia = this.mediaStore
+        .filter(media => media.sessionId === session.id)
+        .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
+        .map(media => ({
+          id: media.id,
+          url: media.url,
+          type: media.type as "photo" | "video",
+          thumbnailUrl: media.thumbnailUrl,
+          duration: media.duration,
+          routeGrade: media.routeGrade,
+          routeColor: media.routeColor,
+        }));
+
+      return {
+        id: session.id,
+        user: session.user,
+        location: session.location,
+        createdAt: session.createdAt!,
+        title: session.title,
+        stats: {
+          totalSends: session.totalSends || 0,
+          routesClimbed: session.routesClimbed || 0,
+          duration: this.formatDuration(session.durationMinutes),
+          hardestSend: session.hardestSend,
+        },
+        media: sessionMedia,
+      };
+    });
   }
 
   private formatDuration(minutes: number): string {

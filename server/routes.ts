@@ -131,6 +131,45 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // PUT /api/users/me - Update current user profile
+  app.put("/api/users/me", authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+      const { height, reach, bio } = req.body;
+      
+      const updates: { height?: number; reach?: number; bio?: string } = {};
+      if (height !== undefined) updates.height = height;
+      if (reach !== undefined) updates.reach = reach;
+      if (bio !== undefined) updates.bio = bio;
+
+      const updatedUser = await db.updateUserProfile(req.user!.id, updates);
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { hashedPassword: _, ...userWithoutPassword } = updatedUser;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
+  // GET /api/users/:userId/sessions - Get all sessions for a specific user
+  app.get("/api/users/:userId/sessions", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+
+      const sessions = await db.getUserSessions(userId);
+      res.json({ sessions });
+    } catch (error) {
+      console.error("Error fetching user sessions:", error);
+      res.status(500).json({ error: "Failed to fetch user sessions" });
+    }
+  });
+
   // ==================== FEED ENDPOINT ====================
 
   // GET /api/feed - Returns paginated climbing sessions with user info

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { motion, PanInfo } from "framer-motion";
 import { ChevronLeft, Play, Pause } from "lucide-react";
@@ -11,8 +11,9 @@ interface SessionWithDetails extends SelectSession {
 }
 
 export default function SessionDetails() {
-  const { sessionId } = useParams<{ sessionId: string }>();
-  const navigate = useNavigate();
+  const [match, params] = useRoute("/session/:sessionId");
+  const [, setLocation] = useLocation();
+  const sessionId = params?.sessionId;
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -33,7 +34,7 @@ export default function SessionDetails() {
         <div className="text-white text-center">
           <p>Error loading session</p>
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => setLocation("/")}
             className="mt-4 bg-white text-black px-4 py-2 rounded"
           >
             Go Back
@@ -57,7 +58,7 @@ export default function SessionDetails() {
         <div className="text-white text-center">
           <p>Session not found</p>
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => setLocation("/")}
             className="mt-4 bg-white text-black px-4 py-2 rounded"
           >
             Go Back
@@ -67,7 +68,8 @@ export default function SessionDetails() {
     );
   }
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'Unknown date';
     return new Intl.DateTimeFormat('en-US', {
       month: 'long',
       day: 'numeric',
@@ -201,7 +203,7 @@ export default function SessionDetails() {
         <div className="absolute top-0 left-0 right-0 z-20 pt-12 pb-4 px-4 bg-gradient-to-b from-black/50 to-transparent">
           <div className="flex justify-between items-center">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => setLocation("/")}
               className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-2"
             >
               <ChevronLeft className="w-6 h-6 text-white" />

@@ -1,0 +1,100 @@
+Here's a precise prompt for Replit to build the profile page:
+
+---
+
+**Create a Profile Page with user information and their climbing sessions feed, plus a fixed bottom navigation bar.**
+
+**Navigation Structure:**
+1. Add a bottom navigation bar with two icons:
+   - Home icon (house) - navigates to homepage (`/`)
+   - Profile icon (person) - navigates to profile page (`/profile`)
+2. Bottom bar should be fixed at bottom of screen on all pages
+3. Show active state on current page icon
+
+**Profile Page Structure (`/profile`):**
+
+1. **Header Section (non-scrollable part of scrollable content):**
+   - Title: "You" (centered)
+   - User avatar (large, ~100px)
+   - Username (e.g., "Toad1")
+   - Height and Reach display side by side:
+     ```
+     Height     Reach
+     178cm      +2cm
+     ```
+   - Bio text (e.g., "Documenting my ascent and falling. (Sorry, climbing has become my entire personality)")
+
+2. **Sessions Feed (scrollable):**
+   - Display all user's sessions using same SessionCard component from homepage
+   - Include "Hardest send" in stats (already in schema)
+   - Sort by most recent first
+   - No pagination needed - show all sessions
+
+**Database Updates:**
+1. Add to users table:
+   - `height` (integer, nullable) - height in cm
+   - `reach` (integer, nullable) - reach in cm (can be positive or negative)
+   - `bio` (text, nullable) - user bio/description
+
+2. Update schema and types accordingly
+
+**Backend Updates:**
+1. Create new endpoint `GET /api/users/:userId/sessions`:
+   - Returns all sessions for a specific user
+   - Same format as feed endpoint but without pagination
+   - Sort by created_at DESC
+
+2. Update `GET /api/users/me` to include height, reach, and bio
+
+3. Add endpoint `PUT /api/users/me` to update profile:
+   ```json
+   {
+     "height": 178,
+     "reach": 2,
+     "bio": "Documenting my ascent..."
+   }
+   ```
+
+**Frontend Implementation:**
+
+1. **Create BottomNavigation component:**
+   ```jsx
+   <nav className="fixed bottom-0 left-0 right-0 bg-white border-t">
+     <div className="flex justify-around py-3">
+       <NavLink to="/" className={({isActive}) => isActive ? "active" : ""}>
+         <HomeIcon />
+       </NavLink>
+       <NavLink to="/profile" className={({isActive}) => isActive ? "active" : ""}>
+         <ProfileIcon />
+       </NavLink>
+     </div>
+   </nav>
+   ```
+
+2. **ProfilePage layout:**
+   - Main container with `padding-bottom: 70px` for bottom nav
+   - Scrollable content area
+   - Reuse SessionCard component for consistency
+
+3. **Update App routing:**
+   ```jsx
+   <Routes>
+     <Route path="/" element={<HomePage />} />
+     <Route path="/session/:sessionId" element={<SessionDetailsPage />} />
+     <Route path="/profile" element={<ProfilePage />} />
+   </Routes>
+   ```
+
+**Styling Requirements:**
+- Bottom nav: white background, subtle top border
+- Active icon: darker/highlighted state
+- Profile header: centered layout, proper spacing
+- Smooth scrolling with proper bottom padding
+- Mobile-first responsive design
+
+**Sample Data Updates:**
+- Add height, reach, and bio to existing test users
+- User 1: height=178, reach=2, bio="Documenting my ascent..."
+- User 2: height=165, reach=-3, bio="Crushing it one route at a time"
+
+Make sure the profile page integrates seamlessly with existing components and maintains consistent styling throughout the app.
