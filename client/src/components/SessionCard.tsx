@@ -16,7 +16,7 @@ export default function SessionCard({ session, timeAgo }: SessionCardProps) {
 
   return (
     <div 
-      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+      className="bg-white p-4 cursor-pointer transition-colors"
       onClick={handleCardClick}
     >
       {/* Header with user info */}

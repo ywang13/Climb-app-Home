@@ -64,7 +64,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-28">
       {/* Header Section */}
       <div className="bg-white">
         <div className="pt-12 pb-6 px-6 text-center">
