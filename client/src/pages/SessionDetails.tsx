@@ -299,29 +299,29 @@ export default function SessionDetails() {
               transition={{ delay: 0.2 }}
             >
               <div className="grid grid-cols-2 gap-6 mt-6">
-                <div className="text-center">
+                <div className="text-left">
+                  <div className="text-sm text-gray-500 mb-1">Total send</div>
                   <div className="text-2xl font-bold text-gray-900">
                     {session.totalSends}
                   </div>
-                  <div className="text-sm text-gray-500">Total send</div>
                 </div>
-                <div className="text-center">
+                <div className="text-left">
+                  <div className="text-sm text-gray-500 mb-1">Routes climbed</div>
                   <div className="text-2xl font-bold text-gray-900">
                     {session.routesClimbed}
                   </div>
-                  <div className="text-sm text-gray-500">Routes climbed</div>
                 </div>
-                <div className="text-center">
+                <div className="text-left">
+                  <div className="text-sm text-gray-500 mb-1">Hardest send</div>
                   <div className="text-2xl font-bold text-gray-900">
                     {session.hardestSend || "N/A"}
                   </div>
-                  <div className="text-sm text-gray-500">Hardest send</div>
                 </div>
-                <div className="text-center">
+                <div className="text-left">
+                  <div className="text-sm text-gray-500 mb-1">Time</div>
                   <div className="text-2xl font-bold text-gray-900">
                     {formatDuration(session.durationMinutes)}
                   </div>
-                  <div className="text-sm text-gray-500">Time</div>
                 </div>
               </div>
             </motion.div>

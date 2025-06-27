@@ -1,4 +1,4 @@
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +11,11 @@ import SessionDetails from "@/pages/SessionDetails";
 import Profile from "@/pages/Profile";
 
 function Router() {
+  const [location] = useLocation();
+  
+  // Show bottom navigation only on Home and Profile pages
+  const showBottomNav = location === "/" || location === "/profile";
+  
   return (
     <>
       <Switch>
@@ -19,7 +24,7 @@ function Router() {
         <Route path="/profile" component={Profile} />
         <Route component={NotFound} />
       </Switch>
-      <BottomNavigation />
+      {showBottomNav && <BottomNavigation />}
     </>
   );
 }
