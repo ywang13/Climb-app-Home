@@ -38,7 +38,7 @@ export const Home = (): JSX.Element => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#f7f7f7' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#EFEFEF' }}>
         {/* Fixed Header */}
         <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
           <div className="pt-12 pb-4 px-4 text-center">
@@ -76,7 +76,7 @@ export const Home = (): JSX.Element => {
 
   if (error) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#f7f7f7' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#EFEFEF' }}>
         {/* Fixed Header */}
         <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
           <div className="pt-12 pb-4 px-4 text-center">
@@ -96,7 +96,7 @@ export const Home = (): JSX.Element => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f7f7f7' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#EFEFEF' }}>
       {/* Fixed Header */}
       <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
         <div className="pt-12 pb-4 px-4 text-center">

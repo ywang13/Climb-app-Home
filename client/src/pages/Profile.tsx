@@ -57,14 +57,14 @@ export default function Profile() {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center pb-20" style={{ backgroundColor: '#f7f7f7' }}>
+      <div className="min-h-screen flex items-center justify-center pb-20" style={{ backgroundColor: '#EFEFEF' }}>
         <div className="text-gray-600">Please log in to view your profile</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-28" style={{ backgroundColor: '#f7f7f7' }}>
+    <div className="min-h-screen pb-28" style={{ backgroundColor: '#EFEFEF' }}>
       {/* Header Section */}
       <div className="bg-white">
         <div className="pt-12 pb-6 px-6 text-center">

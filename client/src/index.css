@@ -24,7 +24,7 @@ body {
   margin: 0 auto;
   touch-action: manipulation;
   overflow-x: hidden;
-  background-color: #f7f7f7;
+  background-color: #EFEFEF;
   /* iOS status bar safe area */
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
