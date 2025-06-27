@@ -113,9 +113,9 @@ export default function Profile() {
       </div>
       
       {/* Sessions Feed */}
-      <div className="px-4 mt-6">
+      <div className="mt-6">
         {sessionsLoading ? (
-          <div className="text-center py-8">
+          <div className="text-center py-8 px-4">
             <div className="text-gray-600">Loading sessions...</div>
           </div>
         ) : userSessions?.sessions.length ? (
@@ -129,7 +129,7 @@ export default function Profile() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
+          <div className="text-center py-8 px-4">
             <div className="text-gray-500">No climbing sessions yet</div>
             <div className="text-sm text-gray-400 mt-1">
               Start logging your climbs to see them here!

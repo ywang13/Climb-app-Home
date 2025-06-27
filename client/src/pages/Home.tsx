@@ -47,10 +47,10 @@ export const Home = (): JSX.Element => {
         </div>
 
         {/* Loading Content */}
-        <div className="pt-20 pb-28 px-4">
+        <div className="pt-20 pb-28">
           <div className="space-y-4 mt-8">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="w-full bg-white rounded-2xl shadow-none border-0">
+              <Card key={i} className="w-full bg-white rounded-none shadow-none border-0">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
@@ -105,7 +105,7 @@ export const Home = (): JSX.Element => {
       </div>
 
       {/* Scrollable Feed Content */}
-      <div className="pt-20 pb-28 px-4">
+      <div className="pt-20 pb-28">
         {feedData?.sessions && feedData.sessions.length > 0 ? (
           <div className="space-y-4">
             {feedData.sessions.map((session, index) => (
