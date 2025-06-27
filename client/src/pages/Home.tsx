@@ -38,7 +38,7 @@ export const Home = (): JSX.Element => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ backgroundColor: '#f7f7f7' }}>
         {/* Fixed Header */}
         <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
           <div className="pt-12 pb-4 px-4 text-center">
@@ -47,10 +47,10 @@ export const Home = (): JSX.Element => {
         </div>
 
         {/* Loading Content */}
-        <div className="pt-20 pb-28">
-          <div className="space-y-0 mt-8">
+        <div className="pt-20 pb-28 px-4">
+          <div className="space-y-4 mt-8">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="w-full rounded-none shadow-none border-0">
+              <Card key={i} className="w-full bg-white rounded-2xl shadow-none border-0">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
@@ -76,7 +76,7 @@ export const Home = (): JSX.Element => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ backgroundColor: '#f7f7f7' }}>
         {/* Fixed Header */}
         <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
           <div className="pt-12 pb-4 px-4 text-center">
@@ -96,7 +96,7 @@ export const Home = (): JSX.Element => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#f7f7f7' }}>
       {/* Fixed Header */}
       <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
         <div className="pt-12 pb-4 px-4 text-center">
@@ -105,9 +105,9 @@ export const Home = (): JSX.Element => {
       </div>
 
       {/* Scrollable Feed Content */}
-      <div className="pt-20 pb-28">
+      <div className="pt-20 pb-28 px-4">
         {feedData?.sessions && feedData.sessions.length > 0 ? (
-          <div className="space-y-0">
+          <div className="space-y-4">
             {feedData.sessions.map((session, index) => (
               <div key={session.id} className={index === 0 ? "mt-8" : ""}>
                 <SessionCard
