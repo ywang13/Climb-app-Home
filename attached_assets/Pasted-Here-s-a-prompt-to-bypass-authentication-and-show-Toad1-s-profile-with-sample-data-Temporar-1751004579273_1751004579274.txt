@@ -1,0 +1,64 @@
+Here's a prompt to bypass authentication and show Toad1's profile with sample data:
+
+---
+
+**Temporarily bypass authentication on the profile page for testing and show Toad1's profile with sample climbing sessions.**
+
+**Requirements:**
+
+1. **Bypass Authentication:**
+   - Comment out or temporarily disable authentication check on the profile page
+   - Hardcode the profile to show data for username "Toad1" (user ID 1 - foranswer)
+   - Add a comment like `// TODO: Re-enable authentication after testing`
+
+2. **Update Toad1's Profile Data:**
+   - Username: "Toad1" (update from alex_climber)
+   - Height: 178cm
+   - Reach: +2cm
+   - Bio: "Documenting my ascent and falling. (Sorry, climbing has become my entire personality)"
+   - Keep existing avatar
+
+3. **Create Sample Sessions for Toad1:**
+   Add these sessions to the database for user ID 1:
+
+   **Session 1 - Today:**
+   - Title: "the v2 in my gym is lit 🔥"
+   - Location: "Movement Sunnyvale"
+   - Total sends: 15
+   - Routes climbed: 15
+   - Hardest send: "V2"
+   - Duration: 123 minutes (2h 3m)
+   - 3 media items from existing climbing images
+
+   **Session 2 - Yesterday:**
+   - Title: "Morning session"
+   - Location: "Movement Sunnyvale"
+   - Total sends: 6
+   - Routes climbed: 12
+   - Hardest send: "V6"
+   - Duration: 51 minutes
+   - 2 media items
+
+   **Session 3 - 3 days ago:**
+   - Title: "Projecting the pink V8"
+   - Location: "Movement Santa Clara"
+   - Total sends: 3
+   - Routes climbed: 8
+   - Hardest send: "V8"
+   - Duration: 90 minutes
+   - 4 media items
+
+   **Session 4 - Last week:**
+   - Title: "Endurance training"
+   - Location: "Movement Berkeley"
+   - Total sends: 25
+   - Routes climbed: 30
+   - Hardest send: "V4"
+   - Duration: 180 minutes
+   - 2 media items
+
+4. **Profile Page Display:**
+   - Show all sessions in the feed using the existing SessionCard component
+   - Ensure proper ordering (most recent first)
+
+Keep the authentication logic in place but commented out so it can be easily re-enabled later. The profile page should immediately show Toad1's data without requiring login.

@@ -25,18 +25,29 @@ function formatTimeAgo(date: Date): string {
 }
 
 export default function Profile() {
-  // Get current user info
-  const { data: currentUser, isLoading: userLoading } = useQuery<SelectUser>({
-    queryKey: ["/api/users/me"],
-  });
+  // TODO: Re-enable authentication after testing
+  // Temporarily bypass authentication and show Toad1's profile (user ID 1)
+  
+  // Hardcoded user data for Toad1
+  const currentUser: SelectUser = {
+    id: 1,
+    username: "Toad1",
+    email: "toad1@example.com",
+    hashedPassword: "",
+    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    height: 178,
+    reach: 2, // +2cm
+    bio: "Documenting my ascent and falling. (Sorry, climbing has become my entire personality)",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  };
 
-  // Get user's sessions
+  // Get user's sessions (still use API but for user ID 1)
   const { data: userSessions, isLoading: sessionsLoading } = useQuery<UserProfileResponse>({
-    queryKey: [`/api/users/${currentUser?.id}/sessions`],
-    enabled: !!currentUser?.id,
+    queryKey: [`/api/users/1/sessions`],
   });
 
-  if (userLoading) {
+  if (false) { // userLoading disabled for testing
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center pb-20">
         <div className="text-gray-600">Loading profile...</div>
