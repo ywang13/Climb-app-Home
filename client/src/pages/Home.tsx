@@ -38,16 +38,16 @@ export const Home = (): JSX.Element => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        {/* Header */}
-        <div className="bg-white sticky top-0 z-10">
+      <div className="min-h-screen bg-gray-50">
+        {/* Fixed Header */}
+        <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
           <div className="pt-12 pb-4 px-4 text-center">
             <h1 className="text-2xl font-bold text-gray-900">Home</h1>
           </div>
         </div>
 
         {/* Loading Content */}
-        <div className="px-4 space-y-4">
+        <div className="pt-20 pb-20 px-4 space-y-4">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="w-full">
               <CardContent className="p-4 space-y-3">
@@ -74,26 +74,36 @@ export const Home = (): JSX.Element => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Something went wrong</h2>
-          <p className="text-gray-600">Failed to load climbing sessions</p>
+      <div className="min-h-screen bg-gray-50">
+        {/* Fixed Header */}
+        <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
+          <div className="pt-12 pb-4 px-4 text-center">
+            <h1 className="text-2xl font-bold text-gray-900">Home</h1>
+          </div>
+        </div>
+        
+        {/* Error Content */}
+        <div className="pt-20 pb-20 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Something went wrong</h2>
+            <p className="text-gray-600">Failed to load climbing sessions</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50">
+      {/* Fixed Header */}
+      <div className="bg-white fixed top-0 left-0 right-0 z-20 border-b border-gray-100">
         <div className="pt-12 pb-4 px-4 text-center">
           <h1 className="text-2xl font-bold text-gray-900">Home</h1>
         </div>
       </div>
 
-      {/* Feed Content */}
-      <div className="px-4 space-y-4">
+      {/* Scrollable Feed Content */}
+      <div className="pt-20 pb-20 px-4 space-y-4">
         {feedData?.sessions && feedData.sessions.length > 0 ? (
           feedData.sessions.map((session) => (
             <SessionCard
